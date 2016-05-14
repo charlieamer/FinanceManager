@@ -1,5 +1,7 @@
 ﻿@{
+	ViewBag.css = new String[] {"LoggedIndex"};
 	Layout = "~/Views/Shared/Layout.cshtml";
+	FinanceManager.User user = ViewData["user"] as FinanceManager.User;
 }
   
 <div class="container text-center">    
@@ -7,7 +9,13 @@
     <div class="col-sm-3 well">
       <div class="well">
         <p><a href="#">My Profile</a></p>
-        <img src="bird.jpg" class="img-circle" height="65" width="65" alt="Avatar">
+        <img src='@user.ProfileRenderPath' class="img-circle" height="65" width="65" alt="Avatar"><br/>
+        <form method="post" enctype="multipart/form-data" action="/user/uploadProfile">
+        	<input type="file" name="ImageFile" onchange="javascript:this.form.submit();" id="profileUpload">
+        </form>
+        @if (user.Image != null) {
+        	<br/><a href="/User/DeleteProfile">Delete image</a>
+        }
       </div>
       <div class="well">
         <p><a href="#">Interests</a></p>
@@ -20,14 +28,6 @@
           <span class="label label-danger">Friends</span>
         </p>
       </div>
-      <div class="alert alert-success fade in">
-        <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
-        <p><strong>Ey!</strong></p>
-        People are looking at your profile. Find out who.
-      </div>
-      <p><a href="#">Link</a></p>
-      <p><a href="#">Link</a></p>
-      <p><a href="#">Link</a></p>
     </div>
     <div class="col-sm-7">
     
@@ -35,15 +35,21 @@
         <div class="col-sm-12">
           <div class="panel panel-default text-left">
             <div class="panel-body">
-              <p contenteditable="true">Status: Feeling Blue</p>
-              <button type="button" class="btn btn-default btn-sm">
-                <span class="glyphicon glyphicon-thumbs-up"></span> Like
-              </button>     
+            	@if (user.Accounts == null || user.Accounts.Count == 0) {
+            		<p>You don't have any accounts. Why don't you <a href="/account/create">create</a> one.</p>
+            	} else {
+            		@("<p>Available accounts:");
+		            	foreach (var acc in user.Accounts) {
+		            		<a href="/account/details?id=@acc.AccountID">@acc.Name</a>
+		            	}
+	            	@("</p>");
+	            }
             </div>
           </div>
         </div>
       </div>
-      
+
+      <!--
       <div class="row">
         <div class="col-sm-3">
           <div class="well">
@@ -57,45 +63,7 @@
           </div>
         </div>
       </div>
-      <div class="row">
-        <div class="col-sm-3">
-          <div class="well">
-           <p>Bo</p>
-           <img src="bandmember.jpg" class="img-circle" height="55" width="55" alt="Avatar">
-          </div>
-        </div>
-        <div class="col-sm-9">
-          <div class="well">
-            <p>Just Forgot that I had to mention something about someone to someone about how I forgot something, but now I forgot it. Ahh, forget it! Or wait. I remember.... no I don't.</p>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-sm-3">
-          <div class="well">
-           <p>Jane</p>
-           <img src="bandmember.jpg" class="img-circle" height="55" width="55" alt="Avatar">
-          </div>
-        </div>
-        <div class="col-sm-9">
-          <div class="well">
-            <p>Just Forgot that I had to mention something about someone to someone about how I forgot something, but now I forgot it. Ahh, forget it! Or wait. I remember.... no I don't.</p>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-sm-3">
-          <div class="well">
-           <p>Anja</p>
-           <img src="bird.jpg" class="img-circle" height="55" width="55" alt="Avatar">
-          </div>
-        </div>
-        <div class="col-sm-9">
-          <div class="well">
-            <p>Just Forgot that I had to mention something about someone to someone about how I forgot something, but now I forgot it. Ahh, forget it! Or wait. I remember.... no I don't.</p>
-          </div>
-        </div>
-      </div>     
+      -->
     </div>
     <div class="col-sm-2 well">
       <div class="thumbnail">

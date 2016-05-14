@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using FinanceManager.Controllers;
+using System.Collections.Generic;
 
 namespace FinanceManager
 {
@@ -39,7 +41,7 @@ namespace FinanceManager
 			set;
 		}
 
-		public int ImageID {
+		public int? ImageID {
 			get;
 			set;
 		}
@@ -47,6 +49,25 @@ namespace FinanceManager
 		public Image Image {
 			get;
 			set;
+		}
+
+		public ICollection<Account> Accounts {
+			get;
+			set;
+		}
+
+		public string ProfileRenderPath {
+			get {
+				if (Image != null)
+					return Image.RenderPath;
+				else
+					return Strings.PATH_NO_IMAGE;
+			}
+		}
+
+		public void Invalidate ()
+		{
+			BaseController.InvalidateUser (this);
 		}
 	}
 }

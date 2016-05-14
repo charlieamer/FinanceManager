@@ -89,6 +89,9 @@
     <Compile Include="Controllers\Strings.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Utils\HttpPostedFileBaseExtensions.cs" />
+    <Compile Include="Models\Account.cs" />
+    <Compile Include="Models\Transaction.cs" />
+    <Compile Include="Controllers\AccountController.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Web.config" />
@@ -120,6 +123,9 @@
     <Content Include="Content\Login.css" />
     <Content Include="Views\user\register.cshtml" />
     <Content Include="Views\user\login.cshtml" />
+    <Content Include="Content\Images\no_pic.png" />
+    <Content Include="Content\LoggedIndex.css" />
+    <Content Include="Views\account\create.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

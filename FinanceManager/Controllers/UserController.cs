@@ -9,6 +9,12 @@ namespace FinanceManager.Controllers
 {
 	public class UserController : BaseController
 	{
+		protected override string[] AuthenticatedRoutes {
+			get {
+				return null;
+			}
+		}
+
 		[HttpGet]
 		public ActionResult Login ()
 		{
@@ -30,6 +36,11 @@ namespace FinanceManager.Controllers
 			}
 		}
 
+		public string GetImagesRoot ()
+		{
+			return Server.MapPath (Strings.PATH_IMAGES);
+		}
+
 		Image SaveAvatar (HttpPostedFileBase file)
 		{
 			if (file.ContentLength == 0)
@@ -39,7 +50,7 @@ namespace FinanceManager.Controllers
 				return null;
 			}
 			string extension = Path.GetExtension (file.FileName);
-			string fname = Server.MapPath ("~/Images/") + Path.GetRandomFileName ();
+			string fname = Path.GetRandomFileName ();
 
 			Image avatar = new Image ();
 			avatar.Path = fname + extension;
@@ -52,13 +63,38 @@ namespace FinanceManager.Controllers
 			}
 
 			try {
-				file.SaveAs (avatar.Path);
+				file.SaveAs (GetImagesRoot () + avatar.Path);
 			} catch (Exception e) {
-				avatar.Delete (context);
+				avatar.Delete (context, GetImagesRoot ());
 				ModelState.AddModelError ("ImageFile", e.Message);
 				return null;
 			}
 			return avatar;
+		}
+
+		[HttpGet]
+		public ActionResult DeleteProfile ()
+		{
+			User user = GetSessionUser ();
+			if (user != null && user.Image != null)
+				user.Image.Delete (context, GetImagesRoot ());
+			return RedirectToAction ("Index", "Home");
+		}
+
+		[HttpPost]
+		public ActionResult UploadProfile ()
+		{
+			DeleteProfile ();
+			if (Request.Files.Count > 0 && IsLoggedIn ()) {
+				Image img = SaveAvatar (Request.Files [0]);
+				if (img != null) {
+					InvalidateUser ();
+					GetSessionUser ().Image = img;
+					GetSessionUser ().ImageID = img.ImageID;
+					context.SaveChanges ();
+				}
+			}
+			return RedirectToAction ("Index", "Home");
 		}
 
 		[HttpGet]
@@ -92,11 +128,18 @@ namespace FinanceManager.Controllers
 				return RedirectToAction ("Index", "Home");
 			} else {
 				if (img != null)
-					img.Delete (context);
+					img.Delete (context, GetImagesRoot ());
 			}
 
 			context.SaveChanges ();
 			return View (user);
+		}
+
+		[HttpGet]
+		public ActionResult Logout ()
+		{
+			SessionLogout ();
+			return RedirectToAction ("Index", "Home");
 		}
 	}
 }

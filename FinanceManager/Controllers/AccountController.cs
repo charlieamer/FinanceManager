@@ -3,25 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.Mvc.Ajax;
 
 namespace FinanceManager.Controllers
 {
-	public class HomeController : BaseController
+	public class AccountController : BaseController
 	{
 		protected override string[] AuthenticatedRoutes {
 			get {
-				return null;
+				return new string[] { "/account/create" };
 			}
 		}
 
-		public ActionResult Index ()
+		public ActionResult Create ()
 		{
-			if (IsLoggedIn ())
-				return View ("LoggedIndex");
-			else
-				return View ("GuestIndex");
+			return View ();
+		}
+
+		[HttpPost]
+		public ActionResult Create (Account acc)
+		{
+			return View ();
 		}
 	}
 }
-
