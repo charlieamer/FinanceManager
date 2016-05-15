@@ -19,6 +19,7 @@ namespace FinanceManager.Controllers
 		public ActionResult Login ()
 		{
 			return View ();
+			//int a = ViewData.ModelState ["123"];
 		}
 
 		[HttpPost]
@@ -32,7 +33,7 @@ namespace FinanceManager.Controllers
 				return View ();
 			} else {
 				SessionLogin (found);
-				return RedirectToAction ("Index", "Home");
+				return RedirectToHome ();
 			}
 		}
 
@@ -78,7 +79,7 @@ namespace FinanceManager.Controllers
 			User user = GetSessionUser ();
 			if (user != null && user.Image != null)
 				user.Image.Delete (context, GetImagesRoot ());
-			return RedirectToAction ("Index", "Home");
+			return RedirectToHome ();
 		}
 
 		[HttpPost]
@@ -94,7 +95,7 @@ namespace FinanceManager.Controllers
 					context.SaveChanges ();
 				}
 			}
-			return RedirectToAction ("Index", "Home");
+			return RedirectToHome ();
 		}
 
 		[HttpGet]
@@ -106,6 +107,7 @@ namespace FinanceManager.Controllers
 		[HttpPost]
 		public ActionResult Register (User user)
 		{
+			// Password repeat validation
 			string Password2 = "";
 			if (Request.Params ["Password2"] != null)
 				Password2 = Request.Params ["Password2"];
@@ -113,6 +115,7 @@ namespace FinanceManager.Controllers
 			if (Password2 != user.Password)
 				ModelState.AddModelError ("Password2", "Passwords don't match");
 
+			// Image upload validation
 			Image img = null;
 			if (Request.Files.Count > 0)
 				img = SaveAvatar (Request.Files [0]);
@@ -122,10 +125,25 @@ namespace FinanceManager.Controllers
 				user.Image = img;
 			}
 
+			// Username duplicate validation
+			User test = context.Users
+				.Where (u => u.Username.ToLower () == user.Username.ToLower ())
+				.FirstOrDefault ();
+			if (test != null)
+				ModelState.AddModelError ("Username", "Username is taken");
+
+			// Email duplicate validation
+			test = context.Users
+				.Where (u => u.Email.ToLower () == user.Email.ToLower ())
+				.FirstOrDefault ();
+			if (test != null)
+				ModelState.AddModelError ("Email", "Email is taken");
+
+			// Final model validation
 			if (ModelState.IsValid) {
 				context.Users.Add (user);
 				context.SaveChanges ();
-				return RedirectToAction ("Index", "Home");
+				return RedirectToAction ("Login");
 			} else {
 				if (img != null)
 					img.Delete (context, GetImagesRoot ());
@@ -139,7 +157,7 @@ namespace FinanceManager.Controllers
 		public ActionResult Logout ()
 		{
 			SessionLogout ();
-			return RedirectToAction ("Index", "Home");
+			return RedirectToHome ();
 		}
 	}
 }

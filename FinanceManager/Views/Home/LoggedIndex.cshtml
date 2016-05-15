@@ -38,11 +38,12 @@
             	@if (user.Accounts == null || user.Accounts.Count == 0) {
             		<p>You don't have any accounts. Why don't you <a href="/account/create">create</a> one.</p>
             	} else {
-            		@("<p>Available accounts:");
-		            	foreach (var acc in user.Accounts) {
-		            		<a href="/account/details?id=@acc.AccountID">@acc.Name</a>
-		            	}
-	            	@("</p>");
+            		<p>Available accounts:</p>
+	            	foreach (var acc in user.Accounts) {
+	            		<a href="/account/details?id=@acc.AccountID">
+	            			<button class="btn">@acc.Name</button>
+	            		</a>
+	            	}
 	            }
             </div>
           </div>

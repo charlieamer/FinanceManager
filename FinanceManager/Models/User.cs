@@ -8,6 +8,11 @@ namespace FinanceManager
 {
 	public class User
 	{
+		public User ()
+		{
+			Admin = false;
+		}
+
 		[Key]
 		public int UserID {
 			get;

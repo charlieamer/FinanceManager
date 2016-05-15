@@ -5,5 +5,23 @@
     Layout = "~/Views/Shared/Layout.cshtml";
 }
 
-<h2>Create account</h2>
+<form class="form-horizontal" method="post" enctype="multipart/form-data">
+<fieldset>
 
+<!-- Form Name -->
+<legend class="text-center"><h2>Create account</h2></legend>
+
+@Html.Raw(FinanceManager.HtmlHelpers.TextInput("Name", ViewData.ModelState["Name"], Model))
+@Html.Raw(FinanceManager.HtmlHelpers.TextInput("Description", ViewData.ModelState["Description"], Model))
+@Html.Raw(FinanceManager.HtmlHelpers.TextInput("Balance", ViewData.ModelState["Balance"], Model))
+
+<!-- Button -->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="submit"></label>
+  <div class="col-md-4">
+    <button id="submit" name="submit" class="btn btn-primary">SUBMIT</button>
+  </div>
+</div>
+
+</fieldset>
+</form>

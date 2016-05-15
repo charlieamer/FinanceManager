@@ -20,6 +20,11 @@ namespace FinanceManager.Controllers
 			return GetSessionUser () != null;
 		}
 
+		protected ActionResult RedirectToHome ()
+		{
+			return RedirectToAction ("Index", "Home");
+		}
+
 		protected User GetSessionUser ()
 		{
 			User user = Session [Strings.SESSION_USER] as User;
@@ -30,6 +35,14 @@ namespace FinanceManager.Controllers
 				}
 			}
 			return user;
+		}
+
+		protected int GetSessionUserID ()
+		{
+			if (IsLoggedIn ())
+				return GetSessionUser ().UserID;
+			else
+				return -1;
 		}
 
 		protected void SessionLogin (User user)
