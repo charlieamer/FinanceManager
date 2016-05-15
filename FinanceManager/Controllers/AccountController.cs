@@ -40,24 +40,30 @@ namespace FinanceManager.Controllers
 
 		private Account account;
 
-		public ActionResult Details (int id)
+		public ActionResult Details (int? id)
 		{
 			return View (account);
 		}
 
-		protected override void OnResultExecuting (ResultExecutingContext filterContext)
+		protected override void OnActionExecuting (ActionExecutingContext filterContext)
 		{
-			base.OnResultExecuting (filterContext);
+			base.OnActionExecuting (filterContext);
 			if (Request.Params.AllKeys.Contains ("id")) {
-				int id = Request.Params ["id"] as int;
-				Account acc = context.Accounts
-					.Include ("Transactions")
-					.Where (a => a.AccountID == id)
-					.FirstOrDefault ();
-				if (acc != null && acc.UserID != GetSessionUserID ())
-					filterContext.Cancel = true;
-				else
-					account = acc;
+				int id;
+				if (int.TryParse (Request.Params ["id"], out id)) {
+					Account acc = context.Accounts
+						.Include ("Transactions")
+						.Where (a => a.AccountID == id)
+						.FirstOrDefault ();
+					if (acc != null && acc.UserID != GetSessionUserID ())
+						filterContext.Result =
+							ErrorResult ("You don't have permission to edit this account", 403);
+					else
+						account = acc;
+				} else {
+					filterContext.Result =
+						ErrorResult ("Invalid id", 403);
+				}
 			}
 		}
 	}

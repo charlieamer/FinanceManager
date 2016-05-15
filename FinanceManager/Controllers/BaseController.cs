@@ -20,6 +20,13 @@ namespace FinanceManager.Controllers
 			return GetSessionUser () != null;
 		}
 
+		protected ActionResult ErrorResult (string text, int status)
+		{
+			ViewData ["text"] = text;
+			Response.StatusCode = status;
+			return View ("Error");
+		}
+
 		protected ActionResult RedirectToHome ()
 		{
 			return RedirectToAction ("Index", "Home");
@@ -61,14 +68,14 @@ namespace FinanceManager.Controllers
 				Session [Strings.SESSION_USER] = null;
 		}
 
-		protected override void OnResultExecuting (ResultExecutingContext filterContext)
+		protected override void OnActionExecuting (ActionExecutingContext filterContext)
 		{
-			base.OnResultExecuting (filterContext);
+			base.OnActionExecuting (filterContext);
 			if (AuthenticatedRoutes != null) {
 				string route = Request.Path;
 				foreach (var aroute in AuthenticatedRoutes) {
 					if (route.ToLower () == aroute.ToLower () && !IsLoggedIn ()) {
-						filterContext.Cancel = true;
+						filterContext.Result = ErrorResult ("Action requires login", 403);
 						return;
 					}
 				}

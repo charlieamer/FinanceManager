@@ -41,7 +41,10 @@ namespace FinanceManager
 			set;
 		}
 
-		IEnumerable<Transaction> Transactions;
+		public IEnumerable<Transaction> Transactions {
+			get;
+			set;
+		}
 	}
 }
 
