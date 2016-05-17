@@ -39,8 +39,11 @@
 	    <div class="collapse navbar-collapse" id="myNavbar">
 	      @if (user != null) {
 		      <ul class="nav navbar-nav">
-		        <li class="active"><a href="/">Home</a></li>
-		        <li><a href="/transactions">Transactions</a></li>
+		        <li><a href="/">Home</a></li>
+		    	@if (user.Admin) {
+		    		<li><a href="/admin">Admin panel</a></li>
+				}
+				<li><a href="/transactions">Transactions</a></li>
 		      </ul>
 		      <form class="navbar-form navbar-right" role="search" action="search">
 		        <div class="form-group input-group">

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FinanceManager
 {
@@ -24,9 +25,19 @@ namespace FinanceManager
 		}
 
 		[Required]
-		public DateTime TransactionTime {
+		public long TransactionTimeValue {
 			get;
 			set;
+		}
+
+		[NotMapped]
+		public DateTime TransactionTime {
+			get {
+				return DateTime.FromBinary (TransactionTimeValue);
+			}
+			set {
+				TransactionTimeValue = value.ToBinary ();
+			}
 		}
 
 		[Required]
@@ -37,7 +48,7 @@ namespace FinanceManager
 		}
 
 		[Required]
-		public bool IsWithdraw {
+		public TransactionType Type {
 			get;
 			set;
 		}
@@ -51,6 +62,12 @@ namespace FinanceManager
 		public string Description {
 			get;
 			set;
+		}
+
+		public void Delete (ModelContext modelContext)
+		{
+			modelContext.Transactions.Remove (this);
+			modelContext.SaveChanges ();
 		}
 	}
 }

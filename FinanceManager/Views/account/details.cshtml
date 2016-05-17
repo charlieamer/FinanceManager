@@ -1,0 +1,42 @@
+﻿@model FinanceManager.Account
+
+@{
+    ViewBag.Title = "details";
+    Layout = "~/Views/Shared/Layout.cshtml";
+}
+
+<h2>@Model.Name</h2>
+<h3>Account details</h3>
+<h4>@Model.Description</h4>
+
+<hr>
+
+Actions:
+<a href="/account/delete?id=@Model.AccountID">Delete</a> |
+<a href="/account/edit?id=@Model.AccountID">Edit</a> |
+<a href="/transaction/create?id=@Model.AccountID">Create transaction</a>
+
+<hr>
+
+@if (Model.Transactions == null || !Model.Transactions.Any()) {
+	<em>This account doesn't have any transactions</em>
+} else {
+	<table class="table">
+		<thead>
+			<th>Time</th>
+			<th>Description</th>
+			<th>Type</th>
+			<th>Amount</th>
+		</thead>
+		<tbody>
+			@foreach (FinanceManager.Transaction t in Model.Transactions) {
+				<tr class="row-@t.Type">
+					<td>@t.TransactionTime</td>
+					<td>@t.Description</td>
+					<td>@t.Type</td>
+					<td>@t.Amount</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}

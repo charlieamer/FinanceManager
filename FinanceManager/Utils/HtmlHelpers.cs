@@ -27,7 +27,7 @@ namespace FinanceManager
 			if (value != null) {
 				try {
 					val = value.GetType ().GetProperty (name).GetValue (value).ToString ();
-				} catch (NullReferenceException ex) {
+				} catch (NullReferenceException) {
 				}
 			}
 			ret += "<input id='id_" + name + "' name='" + name + "' type='" + type + "' " +

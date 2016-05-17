@@ -13,11 +13,11 @@ namespace FinanceManager.Controllers
 
 		protected ModelContext context = new ModelContext ();
 
-		private static SortedSet<int> invalidatedUsers = new SortedSet<int> ();
+		protected User SessionUser { get; private set; }
 
 		protected bool IsLoggedIn ()
 		{
-			return GetSessionUser () != null;
+			return Session [Strings.SESSION_USER] != null;
 		}
 
 		protected ActionResult ErrorResult (string text, int status)
@@ -32,22 +32,10 @@ namespace FinanceManager.Controllers
 			return RedirectToAction ("Index", "Home");
 		}
 
-		protected User GetSessionUser ()
-		{
-			User user = Session [Strings.SESSION_USER] as User;
-			if (user != null) {
-				if (invalidatedUsers.Contains (user.UserID)) {
-					SessionLogin (user);
-					invalidatedUsers.Remove (user.UserID);
-				}
-			}
-			return user;
-		}
-
 		protected int GetSessionUserID ()
 		{
 			if (IsLoggedIn ())
-				return GetSessionUser ().UserID;
+				return SessionUser.UserID;
 			else
 				return -1;
 		}
@@ -55,11 +43,19 @@ namespace FinanceManager.Controllers
 		protected void SessionLogin (User user)
 		{
 			if (user != null)
-				user = context.Users
+				Session [Strings.SESSION_USER] = user.UserID;
+			else
+				Session [Strings.SESSION_USER] = null;
+		}
+
+		private void LoadSessionUser ()
+		{
+			int? user_id = Session [Strings.SESSION_USER] as int?;
+			if (user_id != null)
+				SessionUser = context.Users
 					.Include ("Image")
 					.Include ("Accounts")
-					.FirstOrDefault (u => u.UserID == user.UserID);
-			Session [Strings.SESSION_USER] = user;
+					.FirstOrDefault (u => u.UserID == user_id);
 		}
 
 		protected void SessionLogout ()
@@ -73,30 +69,19 @@ namespace FinanceManager.Controllers
 			base.OnActionExecuting (filterContext);
 			if (AuthenticatedRoutes != null) {
 				string route = Request.Path;
+				string r = route;
+				while (r.EndsWith ("/"))
+					r = r.Remove (route.Length - 1);
 				foreach (var aroute in AuthenticatedRoutes) {
-					if (route.ToLower () == aroute.ToLower () && !IsLoggedIn ()) {
+					if (r.ToLower () == aroute.ToLower () && !IsLoggedIn ()) {
 						filterContext.Result = ErrorResult ("Action requires login", 403);
 						return;
 					}
 				}
 			}
-			ViewData [Strings.SESSION_USER] = GetSessionUser ();
-		}
-
-		public static void InvalidateUser (int UserID)
-		{
-			invalidatedUsers.Add (UserID);
-		}
-
-		public static void InvalidateUser (User user)
-		{
-			if (user != null)
-				InvalidateUser (user.UserID);
-		}
-
-		protected void InvalidateUser ()
-		{
-			InvalidateUser (GetSessionUser ());
+			LoadSessionUser ();
+			if (SessionUser != null)
+				ViewData [Strings.SESSION_USER] = SessionUser;
 		}
 	}
 }

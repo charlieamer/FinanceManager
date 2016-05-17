@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using FinanceManager.Controllers;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace FinanceManager
 {
@@ -20,7 +21,6 @@ namespace FinanceManager
 		}
 
 		[Required]
-		[Index (IsUnique = true)]
 		[StringLength (30)]
 		public string Username {
 			get;
@@ -70,9 +70,22 @@ namespace FinanceManager
 			}
 		}
 
-		public void Invalidate ()
+		public void Delete (ModelContext modelContext)
 		{
-			BaseController.InvalidateUser (this);
+			User theUser = modelContext.Users
+				.Include ("Accounts")
+				.Include ("Image")
+				.Where (u => u.UserID == UserID)
+				.FirstOrDefault ();
+			if (theUser != null) {
+				foreach (Account acc in theUser.Accounts.ToList()) {
+					acc.Delete (modelContext);
+				}
+				if (theUser.Image != null)
+					theUser.Image.Delete (modelContext);
+				modelContext.Users.Remove (theUser);
+				modelContext.SaveChanges ();
+			}
 		}
 	}
 }

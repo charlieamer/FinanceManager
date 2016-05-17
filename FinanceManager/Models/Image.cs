@@ -19,6 +19,11 @@ namespace FinanceManager
 			set;
 		}
 
+		public String BasePath {
+			get;
+			set;
+		}
+
 		public String RenderPath {
 			get {
 				return Strings.PATH_IMAGES + Path;
@@ -33,14 +38,13 @@ namespace FinanceManager
 				.ToList ();
 		}
 
-		public void Delete (ModelContext context, string serverPath)
+		public void Delete (ModelContext context)
 		{
-			System.IO.File.Delete (serverPath + Path);
+			System.IO.File.Delete (BasePath + Path);
 			context.Images.Attach (this);
 			context.Images.Remove (this);
 			foreach (User user in GetUsers(context)) {
 				user.ImageID = null;
-				user.Invalidate ();
 			}
 			context.SaveChanges ();
 		}

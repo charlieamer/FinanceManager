@@ -55,6 +55,7 @@ namespace FinanceManager.Controllers
 
 			Image avatar = new Image ();
 			avatar.Path = fname + extension;
+			avatar.BasePath = GetImagesRoot ();
 			try {
 				avatar = context.Images.Add (avatar);
 				context.SaveChanges ();
@@ -66,7 +67,7 @@ namespace FinanceManager.Controllers
 			try {
 				file.SaveAs (GetImagesRoot () + avatar.Path);
 			} catch (Exception e) {
-				avatar.Delete (context, GetImagesRoot ());
+				avatar.Delete (context);
 				ModelState.AddModelError ("ImageFile", e.Message);
 				return null;
 			}
@@ -76,9 +77,10 @@ namespace FinanceManager.Controllers
 		[HttpGet]
 		public ActionResult DeleteProfile ()
 		{
-			User user = GetSessionUser ();
-			if (user != null && user.Image != null)
-				user.Image.Delete (context, GetImagesRoot ());
+			User user = SessionUser;
+			if (user != null && user.Image != null) {
+				user.Image.Delete (context);
+			}
 			return RedirectToHome ();
 		}
 
@@ -89,9 +91,8 @@ namespace FinanceManager.Controllers
 			if (Request.Files.Count > 0 && IsLoggedIn ()) {
 				Image img = SaveAvatar (Request.Files [0]);
 				if (img != null) {
-					InvalidateUser ();
-					GetSessionUser ().Image = img;
-					GetSessionUser ().ImageID = img.ImageID;
+					SessionUser.Image = img;
+					SessionUser.ImageID = img.ImageID;
 					context.SaveChanges ();
 				}
 			}
@@ -146,7 +147,7 @@ namespace FinanceManager.Controllers
 				return RedirectToAction ("Login");
 			} else {
 				if (img != null)
-					img.Delete (context, GetImagesRoot ());
+					img.Delete (context);
 			}
 
 			context.SaveChanges ();

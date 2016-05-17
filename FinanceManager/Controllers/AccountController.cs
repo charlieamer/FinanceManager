@@ -12,7 +12,8 @@ namespace FinanceManager.Controllers
 			get {
 				return new string[] {
 					"/account/create",
-					"/account/details"
+					"/account/details",
+					"/account/delete"
 				};
 			}
 		}
@@ -27,11 +28,9 @@ namespace FinanceManager.Controllers
 		{
 			if (ModelState.IsValid) {
 				// Set created account's user id to current logged user
-				acc.UserID = GetSessionUser ().UserID;
+				acc.UserID = SessionUser.UserID;
 				context.Accounts.Add (acc);
 				context.SaveChanges ();
-
-				InvalidateUser ();
 
 				return RedirectToHome ();
 			}
@@ -43,6 +42,12 @@ namespace FinanceManager.Controllers
 		public ActionResult Details (int? id)
 		{
 			return View (account);
+		}
+
+		public ActionResult Delete (int? id)
+		{
+			account.Delete (context);
+			return RedirectToHome ();
 		}
 
 		protected override void OnActionExecuting (ActionExecutingContext filterContext)
@@ -58,6 +63,8 @@ namespace FinanceManager.Controllers
 					if (acc != null && acc.UserID != GetSessionUserID ())
 						filterContext.Result =
 							ErrorResult ("You don't have permission to edit this account", 403);
+					else if (acc == null)
+						filterContext.Result = ErrorResult ("Account does not exist", 404);
 					else
 						account = acc;
 				} else {
