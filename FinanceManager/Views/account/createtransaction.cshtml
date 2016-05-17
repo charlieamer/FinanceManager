@@ -1,0 +1,34 @@
+﻿@model FinanceManager.Transaction
+
+@{
+	ViewBag.css = new string[] {"jquery.datetimepicker"};
+    Layout = "~/Views/Shared/Layout.cshtml";
+    FinanceManager.Account account = ViewData["account"] as FinanceManager.Account;
+}
+
+<script src="/Scripts/jquery.datetimepicker.js"></script>
+<h2>Create transaction for account <em>@account.Name</em></h2>
+<form method="post" class="form-horizontal">
+@Html.Raw(FinanceManager.HtmlHelpers.TextInput("Description", ViewData.ModelState["Description"], Model))
+@Html.Raw(FinanceManager.HtmlHelpers.TextInput("Amount", ViewData.ModelState["Amount"], "number", Model))
+@Html.Raw(FinanceManager.HtmlHelpers.DateInput("TransactionTime", ViewData.ModelState["TransactionTime"], Model))
+
+<div class="form-group">
+  <label class="col-md-4 control-label" for="id_Type">Type</label>
+  <div class="col-md-4">
+	<select name="Type" id="id_Type" class="form-control">
+	@foreach (FinanceManager.TransactionType tt in FinanceManager.TransactionType.GetValues(typeof(FinanceManager.TransactionType))) {
+		<option value="@tt" @if (Model != null && Model.Type != null && Model.Type == tt) {@("selected")}>@tt</option>
+	}
+	</select>
+  </div>
+</div>
+
+<input type="hidden" value="@account.AccountID" name="AccountID">
+<div class="form-group">
+  <label class="col-md-4 control-label" for="submit"></label>
+  <div class="col-md-4">
+    <button id="submit" name="submit" class="btn btn-primary">SUBMIT</button>
+  </div>
+</div>
+</form>

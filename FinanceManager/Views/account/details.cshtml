@@ -14,7 +14,7 @@
 Actions:
 <a href="/account/delete?id=@Model.AccountID">Delete</a> |
 <a href="/account/edit?id=@Model.AccountID">Edit</a> |
-<a href="/transaction/create?id=@Model.AccountID">Create transaction</a>
+<a href="/account/createtransaction?id=@Model.AccountID">Create transaction</a>
 
 <hr>
 
@@ -27,14 +27,16 @@ Actions:
 			<th>Description</th>
 			<th>Type</th>
 			<th>Amount</th>
+			<th>Balance</th>
 		</thead>
 		<tbody>
-			@foreach (FinanceManager.Transaction t in Model.Transactions) {
+			@foreach (FinanceManager.Transaction t in Model.Transactions.OrderBy( t => t.TransactionTime)) {
 				<tr class="row-@t.Type">
 					<td>@t.TransactionTime</td>
 					<td>@t.Description</td>
 					<td>@t.Type</td>
 					<td>@t.Amount</td>
+					<td>@(t.BalanceAfter)</td>
 				</tr>
 			}
 		</tbody>

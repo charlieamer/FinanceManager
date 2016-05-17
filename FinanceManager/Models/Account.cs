@@ -54,15 +54,11 @@ namespace FinanceManager
 		public void ApplyTransaction (Transaction transaction)
 		{
 			transaction.BalanceBefore = CurrentBalance;
-			if (transaction.Type == TransactionType.Deposit) {
-				CurrentBalance += transaction.Amount;
-			} else if (transaction.Type == TransactionType.Withdraw) {
-				CurrentBalance -= transaction.Amount;
-				if (CurrentBalance < 0)
-					throw new ArgumentException (
-						"Transaction " + transaction.TransactionID +
-						" will make account balance negative");
-			}
+			CurrentBalance = transaction.BalanceAfter;
+
+			if (CurrentBalance < 0)
+				throw new ArgumentException (
+					"Action will make tis account have negative balance");
 		}
 
 		public void ApplyTransactions (List<Transaction> transactions)

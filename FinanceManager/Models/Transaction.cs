@@ -12,7 +12,6 @@ namespace FinanceManager
 			set;
 		}
 
-		[Required]
 		public Account Account {
 			get;
 			set;
@@ -31,12 +30,17 @@ namespace FinanceManager
 		}
 
 		[NotMapped]
-		public DateTime TransactionTime {
+		public DateTime? TransactionTime {
 			get {
+				if (TransactionTimeValue == 0)
+					return null;
 				return DateTime.FromBinary (TransactionTimeValue);
 			}
 			set {
-				TransactionTimeValue = value.ToBinary ();
+				if (value.HasValue)
+					TransactionTimeValue = value.Value.ToBinary ();
+				else
+					TransactionTimeValue = 0;
 			}
 		}
 
@@ -53,7 +57,6 @@ namespace FinanceManager
 			set;
 		}
 
-		[Required]
 		public float BalanceBefore {
 			get;
 			set;
@@ -62,6 +65,17 @@ namespace FinanceManager
 		public string Description {
 			get;
 			set;
+		}
+
+		public float BalanceAfter {
+			get {
+				if (Type == TransactionType.Deposit)
+					return BalanceBefore + Amount;
+				else if (Type == TransactionType.Withdraw)
+					return BalanceBefore - Amount;
+				else
+					throw new NotImplementedException ();
+			}
 		}
 
 		public void Delete (ModelContext modelContext)
