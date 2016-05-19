@@ -1,6 +1,7 @@
 ﻿using System;
 using FinanceManager.Controllers;
 using System.Web.Mvc;
+using System.Linq;
 
 namespace FinanceManager
 {
@@ -11,7 +12,9 @@ namespace FinanceManager
 				return new string[] {
 					"/admin",
 					"/admin/index",
-					"/admin/seed"
+					"/admin/seed",
+					"/admin/users",
+					"/admin/deleteuser"
 				};
 			}
 		}
@@ -38,6 +41,33 @@ namespace FinanceManager
 		private ActionResult RedirectToAdminHome ()
 		{
 			return RedirectToAction ("Index");
+		}
+
+		public ActionResult Users ()
+		{
+			return View (context.Users.Include ("Categories").Include ("Accounts").ToList ());
+		}
+
+		public ActionResult DeleteUser (int? id)
+		{
+			User user = context.Users.Find (id);
+			if (user != null)
+				user.Delete (context);
+			else
+				return ErrorResult ("User not found", 404);
+			return Redirect ("/admin/users");
+		}
+
+		public ActionResult AdminToggle (int? id)
+		{
+			User user = context.Users.Find (id);
+			if (user != null) {
+				user.Admin = !user.Admin;
+				context.SaveChanges ();
+			} else {
+				return ErrorResult ("User not found", 404);
+			}
+			return Redirect ("/admin/users");
 		}
 	}
 }

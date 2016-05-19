@@ -43,7 +43,7 @@
 		    	@if (user.Admin) {
 		    		<li><a href="/admin">Admin panel</a></li>
 				}
-				<li><a href="/transactions">Transactions</a></li>
+				<li><a href="/category">Categories</a></li>
 		      </ul>
 		      <form class="navbar-form navbar-right" role="search" action="search">
 		        <div class="form-group input-group">
@@ -57,7 +57,7 @@
 		      </form>
 		      <ul class="nav navbar-nav navbar-right">
 		        <li><a href="/user/logout">Logout</a></li>
-		        <li><a href="/user/overview"><span class="glyphicon glyphicon-user"></span> My Account</a></li>
+		        <li><a href="/"><span class="glyphicon glyphicon-user"></span> My Account</a></li>
 		      </ul>
 		  } else {
 		  	  <ul class="nav navbar-nav navbar-right">
@@ -71,9 +71,6 @@
 	<div id="content">
 		@RenderBody()
 	</div>
-	<footer class="container-fluid text-center">
-	  <p>Footer Text</p>
-	</footer>
 </body>
 
 </html>

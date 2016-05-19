@@ -14,7 +14,9 @@ namespace FinanceManager.Controllers
 					"/account/create",
 					"/account/details",
 					"/account/delete",
-					"/account/edit"
+					"/account/edit",
+					"/account/edittransaction",
+					"/account/createtransaction"
 				};
 			}
 		}
@@ -58,10 +60,17 @@ namespace FinanceManager.Controllers
 			return Edit ();
 		}
 
+		private ActionResult PrepareCreateTransactionView (Transaction transaction)
+		{
+			int user_id = GetSessionUserID ();
+			ViewData ["categories"] = context.Categories.Where (c => c.UserID == user_id).ToList ();
+			return View ("createtransaction", transaction);
+		}
+
 		private ActionResult PrepareEditTransactionView (Transaction transaction)
 		{
 			ViewData ["id"] = transaction.TransactionID;
-			return View ("createtransaction", transaction);
+			return PrepareCreateTransactionView (transaction);
 		}
 
 		public ActionResult EditTransaction (int? TransactionID)
@@ -132,6 +141,7 @@ namespace FinanceManager.Controllers
 				ViewData ["dateFrom"] = dateFrom.Value.ToString (Strings.FORMAT_DATE);
 				ViewData ["dateTo"] = dateTo.Value.ToString (Strings.FORMAT_DATE);
 			}
+			account.Transactions = account.Transactions.OrderBy (t => t.TransactionTimeValue).ToList ();
 			ViewData ["message"] = message;
 			return View (account);
 		}
@@ -150,7 +160,7 @@ namespace FinanceManager.Controllers
 				transaction = new Transaction ();
 				transaction.TransactionTime = DateTime.Now;
 			}
-			return View (transaction);
+			return PrepareCreateTransactionView (transaction);
 		}
 
 		[HttpPost]
@@ -180,6 +190,7 @@ namespace FinanceManager.Controllers
 		{
 			Account acc = context.Accounts
 				.Include ("Transactions")
+				.Include ("Transactions.Category")
 				.Where (a => a.AccountID == id)
 				.FirstOrDefault ();
 			account = acc;

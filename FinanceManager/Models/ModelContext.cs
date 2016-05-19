@@ -2,6 +2,7 @@
 using System.Data.Entity;
 using System.Collections.Generic;
 using System.Linq;
+using System.Data.Entity.ModelConfiguration.Conventions;
 
 namespace FinanceManager
 {
@@ -18,6 +19,7 @@ namespace FinanceManager
 
 		public void Seed ()
 		{
+			System.Console.WriteLine ("Seeding database ...");
 			ModelContext context = this;
 			Clear ();
 			User user = new User () {
@@ -26,8 +28,7 @@ namespace FinanceManager
 				Password = "hepek",
 				Admin = true
 			};
-			user = context.Users.Add (user);
-			context.SaveChanges ();
+			user.Create (context);
 
 			Account account = new Account () {
 				UserID = user.UserID,
@@ -42,7 +43,8 @@ namespace FinanceManager
 				Description = "First withdraw",
 				Amount = 100,
 				Type = TransactionType.Withdraw,
-				TransactionTime = DateTime.Today
+				TransactionTime = DateTime.Today,
+				CategoryID = user.GetCategoryByName ("Other").CategoryID
 			};
 			account.AddTransaction (t1, context);
 
@@ -50,7 +52,8 @@ namespace FinanceManager
 				Description = "First deposit",
 				Amount = 200,
 				Type = TransactionType.Deposit,
-				TransactionTime = DateTime.Today
+				TransactionTime = DateTime.Today,
+				CategoryID = user.GetCategoryByName ("Other").CategoryID
 			};
 			account.AddTransaction (t2, context);
 
@@ -59,7 +62,8 @@ namespace FinanceManager
 				Description = "Error transaction",
 				Amount = 2000,
 				Type = TransactionType.Withdraw,
-				TransactionTime = DateTime.Today
+				TransactionTime = DateTime.Today.AddDays (-0.5),
+				CategoryID = user.GetCategoryByName ("Other").CategoryID
 			};
 			bool thrown = false;
 			try {
@@ -77,20 +81,13 @@ namespace FinanceManager
 				Description = "First transaction",
 				Amount = 200,
 				Type = TransactionType.Deposit,
-				TransactionTime = DateTime.Today.AddDays (-1)
+				TransactionTime = DateTime.Today.AddDays (-1),
+				CategoryID = user.GetCategoryByName ("Other").CategoryID
 			};
 			account.AddTransaction (t4, context);
-			List<Transaction> transactions = context.Transactions
-				.Where (t => t.AccountID == account.AccountID)
-				.ToList ()
-				.OrderBy (t => t.TransactionTime)
-				.ToList ();
+			context.SaveChanges ();
 
 			System.Console.WriteLine ("Database seeded successfuly");
-
-			foreach (Transaction t in transactions) {
-				System.Console.WriteLine (t.BalanceBefore);
-			}
 		}
 
 		private class DbInitializer : DropCreateDatabaseIfModelChanges<ModelContext>
@@ -104,6 +101,12 @@ namespace FinanceManager
 		public ModelContext () : base ()
 		{
 			Database.SetInitializer<ModelContext> (new DbInitializer ());
+		}
+
+		protected override void OnModelCreating (DbModelBuilder modelBuilder)
+		{
+			base.OnModelCreating (modelBuilder);
+			modelBuilder.Conventions.Remove<OneToManyCascadeDeleteConvention> ();
 		}
 
 		public DbSet<User> Users {
@@ -122,6 +125,11 @@ namespace FinanceManager
 		}
 
 		public DbSet<Account> Accounts {
+			get;
+			set;
+		}
+
+		public DbSet<Category> Categories {
 			get;
 			set;
 		}

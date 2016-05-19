@@ -1,0 +1,25 @@
+﻿@model FinanceManager.Category
+
+@{
+    ViewBag.Title = "create";
+    ViewBag.css = new string[] {"spectrum"};
+    Layout = "~/Views/Shared/Layout.cshtml";
+}
+<script src="/Scripts/spectrum.js"></script>
+
+<h2>Create category</h2>
+
+<form class="form-horizontal" method="post">
+@Html.Raw(FinanceManager.HtmlHelpers.TextInput("Name", ViewData.ModelState["Name"], Model))
+@Html.Raw(FinanceManager.HtmlHelpers.TextInput("Color", ViewData.ModelState["Color"], "color", Model))
+@if (ViewData["id"] != null) {
+	<input type="hidden" value='@ViewData["id"]' name="CategoryID">
+}
+<div class="form-group">
+  <label class="col-md-4 control-label" for="submit"></label>
+  <div class="col-md-4">
+    <button id="submit" name="submit" class="btn btn-primary">SUBMIT</button>
+    <a class="btn btn-default" href="/category">CANCEL</a>
+  </div>
+</div>
+</form>

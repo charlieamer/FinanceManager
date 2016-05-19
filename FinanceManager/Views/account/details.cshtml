@@ -49,16 +49,18 @@ Actions:
 		<thead>
 			<th>Time</th>
 			<th>Description</th>
+			<th>Category</th>
 			<th>Type</th>
 			<th>Amount</th>
 			<th>Balance</th>
 			<th>Action</th>
 		</thead>
 		<tbody>
-			@foreach (FinanceManager.Transaction t in Model.Transactions.OrderBy( t => t.TransactionTime)) {
+			@foreach (FinanceManager.Transaction t in Model.Transactions) {
 				<tr class="row-@t.Type">
 					<td>@t.TransactionTime</td>
 					<td>@t.Description</td>
+					<td>@t.Category.Name</td>
 					<td>@t.Type</td>
 					<td>@t.Amount</td>
 					<td>@(t.BalanceAfter)</td>
@@ -73,10 +75,10 @@ Actions:
 	<div id="plot"></div>
 	<script>
 		data = [[]];
+		data[0].push([@(Utils.DateToUnix(Model.Transactions.First().TransactionTime.Value.AddDays(-1)) * 1000), @account.Balance]);
 		@foreach (var transaction in Model.Transactions) {
 			@Html.Raw("data[0].push([" + transaction.TransactionTimeValue * 1000 + ", " + transaction.BalanceAfter + "]);\n");
 		}
-		data[0].push([@(Utils.DateToUnix(Model.Transactions.Last().TransactionTime.Value.AddDays(-1)) * 1000), @account.Balance]);
-		$.plot("#plot", data, {xaxis:{mode:"time",timeformat: "%Y/%m/%d %H:%M"}});
+		$.plot("#plot", data, {xaxis:{mode:"time",timeformat: "%d.%m.%Y %H:%M"}});
 	</script>
 }

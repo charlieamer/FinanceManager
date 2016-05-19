@@ -1,0 +1,38 @@
+﻿@model List<FinanceManager.User>
+
+@{
+    ViewBag.Title = "users";
+    Layout = "~/Views/Shared/Layout.cshtml";
+}
+
+<h2>List of users</h2>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>ID</th>
+			<th>Image</th>
+			<th>Username</th>
+			<th>Email</th>
+			<th>Accounts</th>
+			<th>Categories</th>
+			<th>Is admin</th>
+			<th>Actions</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model) {
+			<tr>
+				<th>@item.UserID</th>
+				<th><img src='@item.ProfileRenderPath' class="img-circle" height="65" width="65" alt="Avatar"></th>
+				<th>@item.Username</th>
+				<th>@item.Email</th>
+				<th>@item.Accounts.Count</th>
+				<th>@item.Categories.Count</th>
+				<th>@item.Admin</th>
+				<th><a href="/admin/deleteuser/@item.UserID" class="btn btn-danger">Delete</a></th>
+			</tr>
+		}
+				
+	</tbody>
+</table>

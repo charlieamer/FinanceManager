@@ -57,6 +57,17 @@ namespace FinanceManager
 			set;
 		}
 
+		[Required]
+		public int CategoryID {
+			get;
+			set;
+		}
+
+		public Category Category {
+			get;
+			set;
+		}
+
 		public float BalanceBefore {
 			get;
 			set;
@@ -90,6 +101,7 @@ namespace FinanceManager
 			this.Description = transaction.Description;
 			this.TransactionTime = transaction.TransactionTime;
 			this.Type = transaction.Type;
+			this.CategoryID = transaction.CategoryID;
 		}
 	}
 }

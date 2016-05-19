@@ -1,0 +1,37 @@
+﻿@using FinanceManager;
+@{
+    ViewBag.Title = "index";
+    Layout = "~/Views/Shared/Layout.cshtml";
+    User user = ViewData["user"] as User;
+}
+
+<h2>List of categories</h2>
+
+<a href="/category/create" class="btn btn-primary">Create new category</a>
+
+<div class="text-danger danger">@ViewData["message"]</div>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Color</th>
+			<th>Transactions</th>
+			<th>Actions</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in user.Categories) {
+			<tr>
+				<td>@item.Name</td>
+				<td>@item.Color</td>
+				<td>@item.Transactions.Count</td>
+				<td>
+					<a href="/category/transactions/@item.CategoryID" class="btn btn-default">View transactions</a>
+					<a href="/category/edit/@item.CategoryID" class="btn btn-primary">Edit</a>
+					<a href="/category/delete/@item.CategoryID" class="btn btn-danger">Delete</a>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>

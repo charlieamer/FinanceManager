@@ -5,6 +5,7 @@
     Layout = "~/Views/Shared/Layout.cshtml";
     FinanceManager.Account account = ViewData["account"] as FinanceManager.Account;
     int? id = ViewData["id"] as int?;
+    var categories = ViewData["categories"] as List<FinanceManager.Category>;
 }
 
 <script src="/Scripts/jquery.datetimepicker.js"></script>
@@ -16,6 +17,17 @@
 @Html.Raw(FinanceManager.HtmlHelpers.TextInput("Description", ViewData.ModelState["Description"], Model))
 @Html.Raw(FinanceManager.HtmlHelpers.TextInput("Amount", ViewData.ModelState["Amount"], "number", Model))
 @Html.Raw(FinanceManager.HtmlHelpers.DateInput("TransactionTime", ViewData.ModelState["TransactionTime"], Model))
+
+<div class="form-group">
+  <label class="col-md-4 control-label" for="id_Type">Category</label>
+  <div class="col-md-4">
+	<select name="CategoryID" id="id_CategoryID" class="form-control">
+	@foreach (FinanceManager.Category c in categories) {
+		<option value="@c.CategoryID" @if (Model != null && Model.CategoryID == c.CategoryID) {@("selected")}>@c.Name</option>
+	}
+	</select>
+  </div>
+</div>
 
 <div class="form-group">
   <label class="col-md-4 control-label" for="id_Type">Type</label>

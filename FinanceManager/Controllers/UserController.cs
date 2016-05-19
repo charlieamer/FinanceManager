@@ -142,8 +142,7 @@ namespace FinanceManager.Controllers
 
 			// Final model validation
 			if (ModelState.IsValid) {
-				context.Users.Add (user);
-				context.SaveChanges ();
+				user.Create (context);
 				return RedirectToAction ("Login");
 			} else {
 				if (img != null)
