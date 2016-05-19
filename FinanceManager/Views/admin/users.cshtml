@@ -30,7 +30,10 @@
 				<th>@item.Accounts.Count</th>
 				<th>@item.Categories.Count</th>
 				<th>@item.Admin</th>
-				<th><a href="/admin/deleteuser/@item.UserID" class="btn btn-danger">Delete</a></th>
+				<th>
+					<a href="/admin/deleteuser/@item.UserID" class="btn btn-danger">Delete</a>
+					<a href="/admin/admintoggle/@item.UserID" class="btn btn-Primary">Toggle admin</a>
+				</th>
 			</tr>
 		}
 				

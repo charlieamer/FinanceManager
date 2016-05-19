@@ -45,7 +45,7 @@ namespace FinanceManager
 
 		public ActionResult Users ()
 		{
-			return View (context.Users.Include ("Categories").Include ("Accounts").ToList ());
+			return View (context.Users.Include ("Categories").Include ("Accounts").Include ("Image").ToList ());
 		}
 
 		public ActionResult DeleteUser (int? id)
