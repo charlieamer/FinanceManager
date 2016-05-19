@@ -88,7 +88,7 @@ namespace FinanceManager
 				foreach (Account acc in theUser.Accounts.ToList()) {
 					acc.Delete (modelContext);
 				}
-				foreach (var category in theUser.Categories) {
+				foreach (var category in theUser.Categories.ToList()) {
 					category.Delete (modelContext);
 				}
 				if (theUser.Image != null)
