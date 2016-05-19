@@ -114,10 +114,24 @@ namespace FinanceManager.Controllers
 
 		private Account account;
 
-		public ActionResult Details (string message)
+		public ActionResult Details (string message, DateTime? dateFrom, DateTime? dateTo)
 		{
 			if (account == null)
 				return RedirectToHome ();
+			if (dateFrom != null || dateTo != null) {
+				if (dateFrom == null)
+					dateFrom = Utils.MinDateTime;
+				if (dateTo == null)
+					dateTo = DateTime.Now;
+				long unixFrom = Utils.DateToUnix (dateFrom.Value);
+				long unixTo = Utils.DateToUnix (dateTo.Value); 
+				account.Transactions = context.Transactions
+					.Where (t => t.AccountID == account.AccountID &&
+				t.TransactionTimeValue >= unixFrom &&
+				t.TransactionTimeValue <= unixTo).ToList ();
+				ViewData ["dateFrom"] = dateFrom.Value.ToString (Strings.FORMAT_DATE);
+				ViewData ["dateTo"] = dateTo.Value.ToString (Strings.FORMAT_DATE);
+			}
 			ViewData ["message"] = message;
 			return View (account);
 		}

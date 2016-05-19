@@ -47,7 +47,7 @@ namespace FinanceManager
 				} catch (NullReferenceException) {
 				}
 			}
-			return FormInput (name, state, "text", val);
+			return FormInput (name, state, type, val);
 		}
 
 		public static string TextInput (string name, ModelState state, object value)
@@ -66,7 +66,7 @@ namespace FinanceManager
 			if (time == null)
 				time = DateTime.Now;
 
-			string val = time.Value.ToString ("yyyy/MM/dd HH:mm");
+			string val = time.Value.ToString (Strings.FORMAT_DATE);
 			string ret = FormInput (name, state, "text", val);
 
 			ret += "<script>$('#id_" + HttpUtility.HtmlEncode (name) + "').datetimepicker();</script>";

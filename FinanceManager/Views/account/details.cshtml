@@ -1,11 +1,17 @@
 ﻿@model FinanceManager.Account
+@using FinanceManager
 
 @{
     ViewBag.Title = "details";
-    ViewBag.css = new String[] {"accountdetails"};
+    ViewBag.css = new String[] {"accountdetails", "jquery.datetimepicker"};
     Layout = "~/Views/Shared/Layout.cshtml";
     string message = ViewData["message"] as string;
+    var account = ViewData["account"] as FinanceManager.Account;
 }
+
+<script src="/Scripts/jquery.datetimepicker.js"></script>
+<script src="/Scripts/flot/jquery.flot.min.js"></script>
+<script src="/Scripts/flot/jquery.flot.time.min.js"></script>
 
 <h2>@Model.Name</h2>
 <h3>Account details</h3>
@@ -22,6 +28,20 @@ Actions:
 @if (message != null) {
 <div class="text-danger danger">@message</div>
 }
+<form class="form-inline" id="searchForm">
+	<input type="hidden" name="id" value="@account.AccountID">
+	<div class="form-group">
+		<label for="dateFrom">From:</label>
+		<input type="text" class="form-control" name="dateFrom" id="dateFrom" value='@ViewData["dateFrom"]'>
+	</div>
+	<div class="form-group">
+		<label for="dateTo">To:</label>
+		<input type="text" class="form-control" name="dateTo" id="dateTo" value='@ViewData["dateTo"]'>
+	</div>
+	<button type="submit" class="btn btn-primary">FILTER</button>
+	<button onclick="removeFilter()" class="btn btn-default">REMOVE FILTER</button>
+</form>
+<script src="/Scripts/accountdetails.js"></script>
 @if (Model.Transactions == null || !Model.Transactions.Any()) {
 	<em>This account doesn't have any transactions</em>
 } else {
@@ -50,4 +70,13 @@ Actions:
 			}
 		</tbody>
 	</table>
+	<div id="plot"></div>
+	<script>
+		data = [[]];
+		@foreach (var transaction in Model.Transactions) {
+			@Html.Raw("data[0].push([" + transaction.TransactionTimeValue * 1000 + ", " + transaction.BalanceAfter + "]);\n");
+		}
+		data[0].push([@(Utils.DateToUnix(Model.Transactions.Last().TransactionTime.Value.AddDays(-1)) * 1000), @account.Balance]);
+		$.plot("#plot", data, {xaxis:{mode:"time",timeformat: "%Y/%m/%d %H:%M"}});
+	</script>
 }

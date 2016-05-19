@@ -34,11 +34,11 @@ namespace FinanceManager
 			get {
 				if (TransactionTimeValue == 0)
 					return null;
-				return DateTime.FromBinary (TransactionTimeValue);
+				return Utils.UnixToDate (TransactionTimeValue);
 			}
 			set {
 				if (value.HasValue)
-					TransactionTimeValue = value.Value.ToBinary ();
+					TransactionTimeValue = Utils.DateToUnix (value.Value);
 				else
 					TransactionTimeValue = 0;
 			}
