@@ -13,7 +13,8 @@ namespace FinanceManager.Controllers
 				return new string[] {
 					"/account/create",
 					"/account/details",
-					"/account/delete"
+					"/account/delete",
+					"/account/edit"
 				};
 			}
 		}
@@ -37,12 +38,87 @@ namespace FinanceManager.Controllers
 			return View (acc);
 		}
 
+		public ActionResult Edit ()
+		{
+			ViewData ["id"] = account.AccountID;
+			return View ("create", account);
+		}
+
+		[HttpPost]
+		public ActionResult Edit (Account edited)
+		{
+			ActionResult r = CheckForAccountPermissions (edited.AccountID);
+			if (r != null)
+				return r;
+			if (ModelState.IsValid) {
+				account.FromAnother (edited);
+				context.SaveChanges ();
+				return Redirect ("/account/details?id=" + account.AccountID);
+			}
+			return Edit ();
+		}
+
+		private ActionResult PrepareEditTransactionView (Transaction transaction)
+		{
+			ViewData ["id"] = transaction.TransactionID;
+			return View ("createtransaction", transaction);
+		}
+
+		public ActionResult EditTransaction (int? TransactionID)
+		{
+			Transaction transaction = context.Transactions.Find (TransactionID);
+			if (transaction == null)
+				return ErrorResult ("Transaction not found", 404);
+			ActionResult r = CheckForAccountPermissions (transaction.AccountID);
+			if (r != null)
+				return r;
+			return PrepareEditTransactionView (transaction);
+		}
+
+		[HttpPost]
+		public ActionResult EditTransaction (Transaction edited)
+		{
+			Transaction transaction = context.Transactions.Find (edited.TransactionID);
+			if (transaction == null)
+				return ErrorResult ("Transaction not found", 404);
+			ActionResult r = CheckForAccountPermissions (transaction.AccountID);
+			if (r != null)
+				return r;
+			if (ModelState.IsValid) {
+				try {
+					account.EditTransaction (edited, context);
+					return Redirect ("/account/details?id=" + edited.AccountID);
+				} catch (ArgumentException ex) {
+					ModelState.AddModelError ("Description", ex.Message);
+				}
+			}
+			return PrepareEditTransactionView (transaction);
+		}
+
+		public ActionResult DeleteTransaction (int? TransactionID)
+		{
+			Transaction transaction = context.Transactions.Find (TransactionID);
+			if (transaction == null)
+				return ErrorResult ("Transaction not found", 404);
+			int accid = transaction.AccountID;
+			ActionResult r = CheckForAccountPermissions (accid);
+			if (r != null)
+				return r;
+			try {
+				account.RemoveTransaction (transaction, context);
+			} catch (ArgumentException ex) {
+				return Redirect ("/account/details?id=" + accid + "&message=" + HttpUtility.UrlEncode (ex.Message));
+			}
+			return Redirect ("/account/details?id=" + accid);
+		}
+
 		private Account account;
 
-		public ActionResult Details ()
+		public ActionResult Details (string message)
 		{
 			if (account == null)
 				return RedirectToHome ();
+			ViewData ["message"] = message;
 			return View (account);
 		}
 

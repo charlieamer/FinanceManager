@@ -3,23 +3,30 @@
 @{
     ViewBag.Title = "Create";
     Layout = "~/Views/Shared/Layout.cshtml";
+    FinanceManager.Account account = ViewData["account"] as FinanceManager.Account;
+    int? id = ViewData["id"] as int?;
 }
 
-<form class="form-horizontal" method="post" enctype="multipart/form-data">
+<form class="form-horizontal" method="post">
 <fieldset>
 
 <!-- Form Name -->
 <legend class="text-center"><h2>Create account</h2></legend>
-
+@if (id != null) {
+	<input type="hidden" name="AccountID" value="@id">
+}
 @Html.Raw(FinanceManager.HtmlHelpers.TextInput("Name", ViewData.ModelState["Name"], Model))
 @Html.Raw(FinanceManager.HtmlHelpers.TextInput("Description", ViewData.ModelState["Description"], Model))
-@Html.Raw(FinanceManager.HtmlHelpers.TextInput("Balance", ViewData.ModelState["Balance"], Model))
+@if (id == null) {
+	@Html.Raw(FinanceManager.HtmlHelpers.TextInput("Balance", ViewData.ModelState["Balance"], Model))
+}
 
 <!-- Button -->
 <div class="form-group">
   <label class="col-md-4 control-label" for="submit"></label>
   <div class="col-md-4">
     <button id="submit" name="submit" class="btn btn-primary">SUBMIT</button>
+    <a class="btn btn-default" href="/account/details?id=@account.AccountID">CANCEL</a>
   </div>
 </div>
 

@@ -137,6 +137,7 @@
     <Content Include="Content\jquery.datetimepicker.css" />
     <Content Include="Scripts\jquery.datetimepicker.js" />
     <Content Include="Views\account\createtransaction.cshtml" />
+    <Content Include="Content\accountdetails.css" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

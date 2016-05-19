@@ -4,11 +4,15 @@
 	ViewBag.css = new string[] {"jquery.datetimepicker"};
     Layout = "~/Views/Shared/Layout.cshtml";
     FinanceManager.Account account = ViewData["account"] as FinanceManager.Account;
+    int? id = ViewData["id"] as int?;
 }
 
 <script src="/Scripts/jquery.datetimepicker.js"></script>
 <h2>Create transaction for account <em>@account.Name</em></h2>
 <form method="post" class="form-horizontal">
+@if (id != null) {
+	<input type="hidden" name="TransactionID" value="@id">
+}
 @Html.Raw(FinanceManager.HtmlHelpers.TextInput("Description", ViewData.ModelState["Description"], Model))
 @Html.Raw(FinanceManager.HtmlHelpers.TextInput("Amount", ViewData.ModelState["Amount"], "number", Model))
 @Html.Raw(FinanceManager.HtmlHelpers.DateInput("TransactionTime", ViewData.ModelState["TransactionTime"], Model))
@@ -29,6 +33,7 @@
   <label class="col-md-4 control-label" for="submit"></label>
   <div class="col-md-4">
     <button id="submit" name="submit" class="btn btn-primary">SUBMIT</button>
+    <a class="btn btn-default" href="/account/details?id=@account.AccountID">CANCEL</a>
   </div>
 </div>
 </form>

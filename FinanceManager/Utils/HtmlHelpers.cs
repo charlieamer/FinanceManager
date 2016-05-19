@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web.Mvc;
 using System.Reflection;
+using System.Web;
 
 namespace FinanceManager
 {
@@ -13,7 +14,7 @@ namespace FinanceManager
 				ret += "<div class='form-group'>";
 				ret += "<div class='col-md-4'></div>";
 				ret += "<div class='col-md-4 text-danger'>";
-				ret += state.Errors [0].ErrorMessage;
+				ret += HttpUtility.HtmlEncode (state.Errors [0].ErrorMessage);
 				ret += "</div>";
 				ret += "</div>";
 			}
@@ -23,15 +24,15 @@ namespace FinanceManager
 		public static string FormInput (string name, ModelState state, string type, string val)
 		{
 			string ret = Error (state);
-			ret += "<!-- " + name + "-->\n";
-
 			ret += "<div class='form-group'>";
-			ret += "<label class='col-md-4 control-label' for='id_" + name + "'>";
-			ret += name;
+			ret += "<label class='col-md-4 control-label' for='id_" + HttpUtility.HtmlEncode (name) + "'>";
+			ret += HttpUtility.HtmlEncode (name);
 			ret += "</label>";
 			ret += "<div class='col-md-4'>";
-			ret += "<input id='id_" + name + "' name='" + name + "' type='" + type + "' " +
-			"placeholder='" + name + "' class='form-control input-md' value='" + val + "'>";
+			ret += "<input id='id_" + HttpUtility.HtmlEncode (name) + "' name='" + HttpUtility.HtmlEncode (name)
+			+ "' type='" + HttpUtility.HtmlEncode (type) + "' " +
+			"placeholder='" + HttpUtility.HtmlEncode (name) +
+			"' class='form-control input-md' value='" + HttpUtility.HtmlEncode (val) + "'>";
 			ret += "</div>";
 			ret += "</div>";
 			return ret;
@@ -68,7 +69,7 @@ namespace FinanceManager
 			string val = time.Value.ToString ("yyyy/MM/dd HH:mm");
 			string ret = FormInput (name, state, "text", val);
 
-			ret += "<script>$('#id_" + name + "').datetimepicker();</script>";
+			ret += "<script>$('#id_" + HttpUtility.HtmlEncode (name) + "').datetimepicker();</script>";
 			return ret;
 		}
 	}

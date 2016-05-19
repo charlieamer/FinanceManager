@@ -40,8 +40,8 @@
             	} else {
             		<p>Available accounts:</p>
 	            	foreach (var acc in user.Accounts) {
-	            		<a href="/account/details?id=@acc.AccountID">
-	            			<button class="btn">@acc.Name</button>
+	            		<a href="/account/details?id=@acc.AccountID" class="btn btn-default">
+	            			@acc.Name
 	            		</a>
 	            	}
 	            }

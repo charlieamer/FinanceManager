@@ -83,6 +83,14 @@ namespace FinanceManager
 			modelContext.Transactions.Remove (this);
 			modelContext.SaveChanges ();
 		}
+
+		public void FromAnother (Transaction transaction)
+		{
+			this.Amount = transaction.Amount;
+			this.Description = transaction.Description;
+			this.TransactionTime = transaction.TransactionTime;
+			this.Type = transaction.Type;
+		}
 	}
 }
 

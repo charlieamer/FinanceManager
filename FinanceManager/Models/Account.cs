@@ -76,20 +76,55 @@ namespace FinanceManager
 			}
 		}
 
+		public List<Transaction> GetTransactions (ModelContext context)
+		{
+			return context.Transactions
+				.Where (t => t.AccountID == this.AccountID)
+				.ToList ();
+		}
+
 		public void AddTransaction (Transaction transaction, ModelContext context)
 		{
 			transaction.AccountID = this.AccountID;
-			List<Transaction> all = context.Transactions
-				.Where (t => t.AccountID == this.AccountID)
-				.ToList ();
+			List<Transaction> all = GetTransactions (context);
 			all.Add (transaction);
-			try {
-				ApplyTransactions (all);
-				context.Transactions.Add (transaction);
-				context.SaveChanges ();
-			} catch (Exception ex) {
-				throw ex;
+			ApplyTransactions (all);
+			context.Transactions.Add (transaction);
+			context.SaveChanges ();
+		}
+
+		public void EditTransaction (Transaction edited, ModelContext context)
+		{
+			List<Transaction> all = GetTransactions (context);
+			bool found = false;
+			foreach (var t in all) {
+				if (t.TransactionID == edited.TransactionID) {
+					t.FromAnother (edited);
+					found = true;
+				}
 			}
+			if (!found)
+				throw new ArgumentException ("Edited transaction was not found - " + edited.TransactionID);
+			ApplyTransactions (all);
+			context.SaveChanges ();
+		}
+
+		public void RemoveTransaction (Transaction transaction, ModelContext context)
+		{
+			List<Transaction> all = GetTransactions (context);
+			Transaction toRemove = null;
+			foreach (var t in all) {
+				if (t.TransactionID == transaction.TransactionID) {
+					toRemove = t;
+				}
+			}
+			if (toRemove == null)
+				throw new ArgumentException ("Transaction to delete was not found - " + transaction.TransactionID);
+			else
+				all.Remove (toRemove);
+			ApplyTransactions (all);
+			context.Transactions.Remove (transaction);
+			context.SaveChanges ();
 		}
 
 		public void Delete (ModelContext modelContext)
@@ -105,6 +140,12 @@ namespace FinanceManager
 				modelContext.Accounts.Remove (theAccount);
 				modelContext.SaveChanges ();
 			}
+		}
+
+		public void FromAnother (Account account)
+		{
+			this.Name = account.Name;
+			this.Description = account.Description;
 		}
 	}
 }
