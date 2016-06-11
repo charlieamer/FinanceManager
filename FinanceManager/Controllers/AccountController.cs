@@ -23,6 +23,7 @@ namespace FinanceManager.Controllers
 
 		public ActionResult Create ()
 		{
+			ViewData ["account"] = new Account ();
 			return View ();
 		}
 
